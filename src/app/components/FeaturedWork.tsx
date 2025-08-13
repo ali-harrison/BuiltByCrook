@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import Image from 'next/image'
 
 const BackgroundText = () => {
   return (
@@ -152,6 +153,19 @@ const FeaturedWork = () => {
   ]
 
   const [selectedProject, setSelectedProject] = useState(projects[0])
+  const [thumbnailErrors, setThumbnailErrors] = useState<{
+    [key: number]: boolean
+  }>({})
+  const [featuredImageError, setFeaturedImageError] = useState(false)
+
+  const handleThumbnailError = (projectId: number) => {
+    setThumbnailErrors((prev) => ({ ...prev, [projectId]: true }))
+  }
+
+  const handleProjectChange = (project: (typeof projects)[0]) => {
+    setSelectedProject(project)
+    setFeaturedImageError(false) // Reset featured image error when changing projects
+  }
 
   return (
     <div className="min-h-screen bg-black text-white p-8 flex flex-col items-center justify-center relative">
@@ -188,35 +202,36 @@ const FeaturedWork = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05, duration: 0.4 }}
-                    onClick={() => setSelectedProject(project)}
+                    onClick={() => handleProjectChange(project)}
                     whileHover={{ x: 5 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     {/* List Item Content */}
                     <div className="flex items-center gap-3">
                       {/* Thumbnail */}
-                      <div className="w-12 h-8 rounded overflow-hidden flex-shrink-0 bg-gray-700">
-                        <img
-                          src={project.image}
-                          alt={project.title}
-                          className="w-full h-full object-cover"
-                          onLoad={(e) => {
-                            console.log('Thumbnail loaded:', project.image)
-                          }}
-                          onError={(e) => {
-                            console.log(
-                              'Thumbnail failed to load:',
-                              project.image
-                            )
-                            const target = e.target
-                            target.style.display = 'none'
-                            target.parentElement.innerHTML = `
-                              <div class="w-full h-full bg-gradient-to-br from-red-900/50 to-purple-900/50 flex items-center justify-center text-xs text-white/50">
-                                ${project.number}
-                              </div>
-                            `
-                          }}
-                        />
+                      <div className="relative w-12 h-8 rounded overflow-hidden flex-shrink-0 bg-gray-700">
+                        {thumbnailErrors[project.id] ? (
+                          <div className="w-full h-full bg-gradient-to-br from-red-900/50 to-purple-900/50 flex items-center justify-center text-xs text-white/50">
+                            {project.number}
+                          </div>
+                        ) : (
+                          <Image
+                            src={project.image}
+                            alt={project.title}
+                            fill
+                            className="object-cover"
+                            onLoad={() => {
+                              console.log('Thumbnail loaded:', project.image)
+                            }}
+                            onError={() => {
+                              console.log(
+                                'Thumbnail failed to load:',
+                                project.image
+                              )
+                              handleThumbnailError(project.id)
+                            }}
+                          />
+                        )}
                       </div>
 
                       {/* Project Info */}
@@ -258,40 +273,39 @@ const FeaturedWork = () => {
               <div className="h-3/4 relative overflow-hidden">
                 {/* Project Image */}
                 <div className="absolute inset-0">
-                  <img
-                    src={selectedProject.image}
-                    alt={selectedProject.title}
-                    className="w-full h-full object-cover"
-                    onLoad={(e) => {
-                      console.log(
-                        'Image loaded successfully:',
-                        selectedProject.image
-                      )
-                    }}
-                    onError={(e) => {
-                      console.log(
-                        'Image failed to load:',
-                        selectedProject.image
-                      )
-                      const target = e.target
-                      target.style.display = 'none'
-                      const fallback = target.nextElementSibling
-                      if (fallback) {
-                        fallback.style.display = 'block'
-                        fallback.innerHTML = `
-                          <div class="absolute inset-0 bg-gradient-to-br from-red-900/50 to-purple-900/50 flex items-center justify-center">
-                            <div class="text-center">
-                              <div class="text-6xl font-mono text-white/30 mb-4">#${selectedProject.number}</div>
-                              <div class="text-white/50">Image not found</div>
-                              <div class="text-xs text-white/30 mt-2">Check: ${selectedProject.image}</div>
-                            </div>
-                          </div>
-                        `
-                      }
-                    }}
-                  />
-                  {/* Fallback gradient background */}
-                  <div className="absolute inset-0 hidden"></div>
+                  {featuredImageError ? (
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-900/50 to-purple-900/50 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-6xl font-mono text-white/30 mb-4">
+                          #{selectedProject.number}
+                        </div>
+                        <div className="text-white/50">Image not found</div>
+                        <div className="text-xs text-white/30 mt-2">
+                          Check: {selectedProject.image}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <Image
+                      src={selectedProject.image}
+                      alt={selectedProject.title}
+                      fill
+                      className="object-cover"
+                      onLoad={() => {
+                        console.log(
+                          'Image loaded successfully:',
+                          selectedProject.image
+                        )
+                      }}
+                      onError={() => {
+                        console.log(
+                          'Image failed to load:',
+                          selectedProject.image
+                        )
+                        setFeaturedImageError(true)
+                      }}
+                    />
+                  )}
                 </div>
 
                 {/* Dark overlay for text readability */}
