@@ -2,8 +2,13 @@
 
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 
-const LoadingScreen = ({ onLoadingComplete }) => {
+const LoadingScreen = ({
+  onLoadingComplete,
+}: {
+  onLoadingComplete?: () => void
+}) => {
   const [progress, setProgress] = useState(0)
   const [isExiting, setIsExiting] = useState(false)
 
@@ -129,6 +134,8 @@ const BackgroundText = () => {
 
 const LandingHero = () => {
   const [isLoading, setIsLoading] = useState(true)
+  const [image1Error, setImage1Error] = useState(false)
+  const [image2Error, setImage2Error] = useState(false)
 
   return (
     <>
@@ -147,20 +154,25 @@ const LandingHero = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
             >
-              <div className="w-[420px] h-64 bg-gray-800 rounded-lg overflow-hidden border border-white/20 group cursor-pointer shadow-2xl">
-                <img
-                  src="/images/portfolio/work-1.webp"
-                  alt="SOBA TYPOGRAPHY"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  onError={(e) => {
-                    e.target.style.display = 'none'
-                    e.target.parentElement.innerHTML = `
-                      <div class="w-full h-full bg-gradient-to-br from-blue-900/50 to-purple-900/50 flex items-center justify-center">
-                        <span class="text-white/50 text-sm">SOBA TYPOGRAPHY</span>
-                      </div>
-                    `
-                  }}
-                />
+              <div className="relative w-[420px] h-64 bg-gray-800 rounded-lg overflow-hidden border border-white/20 group cursor-pointer shadow-2xl">
+                {image1Error ? (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-900/50 to-purple-900/50 flex items-center justify-center">
+                    <span className="text-white/50 text-sm">
+                      SOBA TYPOGRAPHY
+                    </span>
+                  </div>
+                ) : (
+                  <Image
+                    src="/images/portfolio/work-1.webp"
+                    alt="SOBA TYPOGRAPHY"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={() => {
+                      console.log('Image 1 failed to load')
+                      setImage1Error(true)
+                    }}
+                  />
+                )}
               </div>
               <p className="text-sm text-white/60 mt-4 tracking-wider font-mono">
                 SOBA TYPOGRAPHY~LEGENDARY~
@@ -173,20 +185,23 @@ const LandingHero = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ delay: 0.8, duration: 0.8 }}
             >
-              <div className="w-72 h-44 bg-white rounded-lg overflow-hidden border border-white/20 group cursor-pointer shadow-xl">
-                <img
-                  src="/images/portfolio/work-3.webp"
-                  alt="NT x Ember Illustration"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  onError={(e) => {
-                    e.target.style.display = 'none'
-                    e.target.parentElement.innerHTML = `
-                      <div class="w-full h-full bg-gradient-to-br from-red-900/50 to-orange-900/50 flex items-center justify-center">
-                        <span class="text-white/50 text-xs">NT x Ember</span>
-                      </div>
-                    `
-                  }}
-                />
+              <div className="relative w-72 h-44 bg-white rounded-lg overflow-hidden border border-white/20 group cursor-pointer shadow-xl">
+                {image2Error ? (
+                  <div className="w-full h-full bg-gradient-to-br from-red-900/50 to-orange-900/50 flex items-center justify-center">
+                    <span className="text-white/50 text-xs">NT x Ember</span>
+                  </div>
+                ) : (
+                  <Image
+                    src="/images/portfolio/work-3.webp"
+                    alt="NT x Ember Illustration"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={() => {
+                      console.log('Image 2 failed to load')
+                      setImage2Error(true)
+                    }}
+                  />
+                )}
               </div>
               <p className="text-xs text-white/50 mt-3 tracking-wider font-mono">
                 NT x Ember Illustration
@@ -201,7 +216,7 @@ const LandingHero = () => {
             >
               <div className="bg-black/80 backdrop-blur-sm p-6 rounded border border-white/15 w-80">
                 <h3 className="text-sm text-red-400 font-mono mb-3 tracking-wide">
-                  // Visual Storyteller
+                  {/* Visual Storyteller */}
                 </h3>
                 <p className="text-xs text-white/70 leading-relaxed font-mono tracking-wide">
                   Crafting bold visuals at the intersection

@@ -140,15 +140,15 @@ const Info = () => {
               <p>
                 With over 10 years of experience, I have always been a jack of
                 all trades, yet a master at none. I started with rebranding for
-                Proffesional e-sports teams , and than slowly made my way into
-                the merchandise stream , to than carry on and take on a more
+                Professional e-sports teams, and than slowly made my way into
+                the merchandise stream, to than carry on and take on a more
                 career orientated approach.
               </p>
               <p>
                 When I am not designing or coding, you will find me exploring
                 the many emotions that come with 18 holes of golf, Hunting and
-                gathering to put food on my table, otherwise I'll be diving into
-                the deep realm of a nice cold beer.
+                gathering to put food on my table, otherwise I&apos;ll be diving
+                into the deep realm of a nice cold beer.
               </p>
             </div>
           </motion.div>
